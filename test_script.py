@@ -1,7 +1,8 @@
 from zipfile import ZipFile
 from pypdf import PdfReader
-from config import ZIP_FILE_DIR, TEMPORARY_PDF, TEMPORARY_CSV, TEMPORARY_XLSX
+from config import ZIP_FILE_DIR, LIST_FILE
 from io import TextIOWrapper
+from openpyxl import load_workbook
 import os
 import csv
 
@@ -14,7 +15,7 @@ def test_create_zip(create_zip):
             name = os.path.basename(file.filename)
             list_files.append(name)
     assert num_files == 3
-    assert 'username.csv' in list_files
+    assert LIST_FILE == list_files
 
 
 def test_csv(create_zip):
@@ -23,8 +24,8 @@ def test_csv(create_zip):
         file_size = file_info.file_size
         with zf.open('username.csv') as tmp_file:
             reader = list(csv.reader(TextIOWrapper(tmp_file, encoding='utf-8'), delimiter=';'))
-            print(reader[1])
-    assert file_size == 174
+        assert reader[1] == ['booker12', '9012', 'Rachel', 'Booker']
+        assert file_size == 174
 
 
 def test_pdf(create_zip):
@@ -36,6 +37,18 @@ def test_pdf(create_zip):
             page = reader.pages[0]
             text = page.extract_text()
             number_of_pages = len(reader.pages)
-            assert number_of_pages == 2
-            assert file_size == 3028
-            assert 'just for use in the Virtual Mechanics tutorials' in text
+        assert number_of_pages == 2
+        assert file_size == 3028
+        assert 'just for use in the Virtual Mechanics tutorials' in text
+
+
+def test_xlsx(create_zip):
+    with ZipFile(ZIP_FILE_DIR) as zf:
+        file_info = zf.getinfo('file_example_XLSX_50.xlsx')
+        file_size = file_info.file_size
+        with zf.open('file_example_XLSX_50.xlsx') as tmp_file:
+            reader = load_workbook(tmp_file)
+            sheet = reader.active
+            print()
+        assert sheet.cell(row=2, column=2).value == 'Dulce'
+        assert file_size == 7360

@@ -1,6 +1,6 @@
 import shutil
 
-from config import RESOURCE_DIR, ZIP_FILE_DIR, TMP_DIR, LIST_FILE, TEMPORARY_PDF
+from config import RESOURCE_DIR, ZIP_FILE_DIR, TMP_DIR, LIST_FILE
 import zipfile
 import pytest
 import os
@@ -16,9 +16,3 @@ def create_zip():
             zf.write(add_file, os.path.basename(add_file))
     yield
     shutil.rmtree(RESOURCE_DIR)
-
-
-@pytest.fixture
-def rm_pdf():
-    yield
-    os.remove(TEMPORARY_PDF)
