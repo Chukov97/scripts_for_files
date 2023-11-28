@@ -49,6 +49,5 @@ def test_xlsx(create_zip):
         with zf.open('file_example_XLSX_50.xlsx') as tmp_file:
             reader = load_workbook(tmp_file)
             sheet = reader.active
-            print()
         assert sheet.cell(row=2, column=2).value == 'Dulce'
         assert file_size == 7360
